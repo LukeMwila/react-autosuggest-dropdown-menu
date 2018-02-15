@@ -1,4 +1,4 @@
-# react-calendar-date-selector
+# react-autosuggest-dropdown-menu
 
 An autosuggest dropdown menu that highlights the matching characters.
 
