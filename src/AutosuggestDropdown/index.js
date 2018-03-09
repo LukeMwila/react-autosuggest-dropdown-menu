@@ -7,47 +7,60 @@ class AutosuggestDropdown extends Component {
 
   checkForMatch (textBeingChecked) {
     if (textBeingChecked.toUpperCase().indexOf(this.props.searchFor.toUpperCase()) !== -1) {
-      let stringToWrap = textBeingChecked.substring(0, this.props.searchFor.length) + ')_' + textBeingChecked.substring(this.props.searchFor.length, textBeingChecked.length)
+      let start = textBeingChecked.toUpperCase().search(this.props.searchFor.toUpperCase())
+      let end = start + this.props.searchFor.length
+      let stringToWrap = ''
+      for (let i = 0; i < textBeingChecked.length; i++) {
+        if (i === start) {
+          stringToWrap = stringToWrap + ')_' + textBeingChecked.charAt(i)
+        } else if (i === end) {
+          stringToWrap = stringToWrap + ')_' + textBeingChecked.charAt(i)
+        } else {
+          stringToWrap = stringToWrap + textBeingChecked.charAt(i)
+        }
+      }
+
       return stringToWrap
     } else {
       return textBeingChecked
     }
   }
 
-  checkForExactCharacterMatch(textBeingChecked){
-    if(textBeingChecked.substring(0, this.props.searchFor.length).toUpperCase() === this.props.searchFor.toUpperCase()){
-      return textBeingChecked.substring(0, this.props.searchFor.length) + ')_' + textBeingChecked.substring(this.props.searchFor.length, textBeingChecked.length)
-    }else{
-      return textBeingChecked
-    }
-  }
-
   itemsToDisplay () {
     let itemsToDisplay = null
-    let text
+    let text, endOfText, divStyle
     let newText = []
+    divStyle = { background: "#00cc99" }
+    if(this.props.highlightColour && this.props.highlightColour !== ""){
+      divStyle = { background: this.props.highlightColour }
+    }
 
     if (this.props.itemsToDisplay) {
       if (this.props.searchFor !== '') {
         itemsToDisplay = this.props.itemsToDisplay.filter((item) => {
-          if (item.valueToSearch && item.valueToSearch !== null) {
-            return item.valueToSearch.substring(0, this.props.searchFor.length).toUpperCase() === this.props.searchFor.toUpperCase()
+          if (item.valueToSearch !== null) {
+            return item.valueToSearch.toUpperCase().indexOf(this.props.searchFor.toUpperCase()) !== -1
           }
         })
         if (itemsToDisplay.length) {
           itemsToDisplay = itemsToDisplay.map((item, index) => {
-            text = this.checkForExactCharacterMatch(item.valueToSearch)
+            endOfText = ''
+
+            text = this.checkForMatch(item.valueToSearch)
             if (text.includes(')_')) {
               newText = text.split(')_')
             }
 
-            return <div className='float-left full-width standard-dropdown-menu-item' key={index} onClick={(e) => this.props.chooseDropdownItem(e, item.valueToSearch, item)}>
+            endOfText = (newText && newText[2]) ? newText[2] : endOfText
+
+            return <div key={index} className='float-left full-width standard-dropdown-menu-item' onClick={(e) => this.props.chooseDropdownItem(e, item.valueToSearch, item)}>
+              <i className='fa fa-gavel' />&nbsp;&nbsp;
               {
-                (newText.length) ? <div><div className='highlightText'>{ newText[0] }</div>{ newText[1] }</div> : text
+                (newText.length) ? <span><span>{ newText[0] }</span><span style={divStyle} >{ newText[1] }</span><span>{ newText[2] }</span></span> : text
               }
             </div>
           })
-        }
+        } 
       }
     }
     return itemsToDisplay
@@ -68,7 +81,6 @@ class AutosuggestDropdown extends Component {
 }
 
 AutosuggestDropdown.propTypes = {
-  displayDropdown: PropTypes.bool.isRequired,
   searchFor: PropTypes.string.isRequired,
   itemsToDisplay: PropTypes.array
 }

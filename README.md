@@ -55,23 +55,38 @@ class App extends Component {
     }
 
     this.chooseDropdownItem = this.chooseDropdownItem.bind(this)
+    this.updateSearchValue = this.updateSearchValue.bind(this)
+    this.showDropdown = this.showDropdown.bind(this)
   }
 
   chooseDropdownItem (e, valueSelected, valueObject) {
-    this.setState({ showDropdown: false, chosenValue: valueSelected })
-    console.log(valueObject)
+    e.preventDefault()
+    this.setState({ showDropdown: false, searchValue: valueSelected })
+  }
+
+  updateSearchValue(e){
+    e.preventDefault()
+    this.setState({ searchValue: e.target.value })
+  }
+
+  showDropdown(){
+    this.setState({ showDropdown: true })
   }
 
   render() {
     return (
       <div className='App'>
-        <ReactAutoSuggestDropdown 
+       <ReactAutoSuggestDropdown 
           list={this.state.list} 
-          showDropdown={this.state.showDropdown} 
+          showDropdown={this.showDropdown} 
+          displayDropdownMenu={this.state.showDropdown}
           chosenValue={this.state.chosenValue} 
           chooseDropdownItem={this.chooseDropdownItem} 
+          updateSearchValue={this.updateSearchValue}
+          searchValue={this.state.searchValue}
+          highlightColour={"#ff9966"}
         />
-      </div>
+       </div>
     );
   }
 }
@@ -84,6 +99,10 @@ export default App;
 | Props              | Default values | Possible values                          |
 | -------------------| --------------| ------------------------------------------|
 | list               | none          | array                                     |
-| showDropdown       | false         | boolean                                   |
+| showDropdown       | none          | function                                  |
+| displayDropdownMenu| false         | bool                                      |
 | chosenValue        | none          | any                                       |
+| searchValue        | none          | any                                       |
 | chooseDropdownItem | none          | function                                  |
+| updateSearchValue  | none          | function                                  |
+| highlightColour    | "#00cc99"     | string                                    |
