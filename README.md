@@ -21,6 +21,8 @@ class App extends Component {
   constructor () {
     super()
     this.state = {
+      chosenValue: '',
+      searchValue: '',
       showDropdown: false,
       list: [
         {
