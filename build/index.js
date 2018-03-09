@@ -501,17 +501,20 @@ var AutosuggestDropdown = function (_Component) {
     key: 'checkForMatch',
     value: function checkForMatch(textBeingChecked) {
       if (textBeingChecked.toUpperCase().indexOf(this.props.searchFor.toUpperCase()) !== -1) {
-        var stringToWrap = textBeingChecked.substring(0, this.props.searchFor.length) + ')_' + textBeingChecked.substring(this.props.searchFor.length, textBeingChecked.length);
+        var start = textBeingChecked.toUpperCase().search(this.props.searchFor.toUpperCase());
+        var end = start + this.props.searchFor.length;
+        var stringToWrap = '';
+        for (var i = 0; i < textBeingChecked.length; i++) {
+          if (i === start) {
+            stringToWrap = stringToWrap + ')_' + textBeingChecked.charAt(i);
+          } else if (i === end) {
+            stringToWrap = stringToWrap + ')_' + textBeingChecked.charAt(i);
+          } else {
+            stringToWrap = stringToWrap + textBeingChecked.charAt(i);
+          }
+        }
+
         return stringToWrap;
-      } else {
-        return textBeingChecked;
-      }
-    }
-  }, {
-    key: 'checkForExactCharacterMatch',
-    value: function checkForExactCharacterMatch(textBeingChecked) {
-      if (textBeingChecked.substring(0, this.props.searchFor.length).toUpperCase() === this.props.searchFor.toUpperCase()) {
-        return textBeingChecked.substring(0, this.props.searchFor.length) + ')_' + textBeingChecked.substring(this.props.searchFor.length, textBeingChecked.length);
       } else {
         return textBeingChecked;
       }
@@ -522,37 +525,58 @@ var AutosuggestDropdown = function (_Component) {
       var _this2 = this;
 
       var itemsToDisplay = null;
-      var text = void 0;
+      var text = void 0,
+          endOfText = void 0,
+          divStyle = void 0;
       var newText = [];
+      divStyle = { background: "#00cc99" };
+      if (this.props.highlightColour && this.props.highlightColour !== "") {
+        divStyle = { background: this.props.highlightColour };
+      }
 
       if (this.props.itemsToDisplay) {
         if (this.props.searchFor !== '') {
           itemsToDisplay = this.props.itemsToDisplay.filter(function (item) {
-            if (item.valueToSearch && item.valueToSearch !== null) {
-              return item.valueToSearch.substring(0, _this2.props.searchFor.length).toUpperCase() === _this2.props.searchFor.toUpperCase();
+            if (item.valueToSearch !== null) {
+              return item.valueToSearch.toUpperCase().indexOf(_this2.props.searchFor.toUpperCase()) !== -1;
             }
           });
           if (itemsToDisplay.length) {
             itemsToDisplay = itemsToDisplay.map(function (item, index) {
-              text = _this2.checkForExactCharacterMatch(item.valueToSearch);
+              endOfText = '';
+
+              text = _this2.checkForMatch(item.valueToSearch);
               if (text.includes(')_')) {
                 newText = text.split(')_');
               }
 
+              endOfText = newText && newText[2] ? newText[2] : endOfText;
+
               return _react2.default.createElement(
                 'div',
-                { className: 'float-left full-width standard-dropdown-menu-item', key: index, onClick: function onClick(e) {
+                { key: index, className: 'float-left full-width standard-dropdown-menu-item', onClick: function onClick(e) {
                     return _this2.props.chooseDropdownItem(e, item.valueToSearch, item);
                   } },
+                _react2.default.createElement('i', { className: 'fa fa-gavel' }),
+                '\xA0\xA0',
                 newText.length ? _react2.default.createElement(
-                  'div',
+                  'span',
                   null,
                   _react2.default.createElement(
-                    'div',
-                    { className: 'highlightText' },
+                    'span',
+                    null,
                     newText[0]
                   ),
-                  newText[1]
+                  _react2.default.createElement(
+                    'span',
+                    { style: divStyle },
+                    newText[1]
+                  ),
+                  _react2.default.createElement(
+                    'span',
+                    null,
+                    newText[2]
+                  )
                 ) : text
               );
             });
@@ -581,7 +605,6 @@ var AutosuggestDropdown = function (_Component) {
 }(_react.Component);
 
 AutosuggestDropdown.propTypes = {
-  displayDropdown: _propTypes2.default.bool.isRequired,
   searchFor: _propTypes2.default.string.isRequired,
   itemsToDisplay: _propTypes2.default.array
 };
@@ -599,8 +622,6 @@ Object.defineProperty(exports, "__esModule", {
   value: true
 });
 
-var _createClass = function () { function defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } } return function (Constructor, protoProps, staticProps) { if (protoProps) defineProperties(Constructor.prototype, protoProps); if (staticProps) defineProperties(Constructor, staticProps); return Constructor; }; }();
-
 var _react = __webpack_require__(4);
 
 var _react2 = _interopRequireDefault(_react);
@@ -611,72 +632,26 @@ var _AutosuggestDropdown2 = _interopRequireDefault(_AutosuggestDropdown);
 
 function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
 
-function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
-
-function _possibleConstructorReturn(self, call) { if (!self) { throw new ReferenceError("this hasn't been initialised - super() hasn't been called"); } return call && (typeof call === "object" || typeof call === "function") ? call : self; }
-
-function _inherits(subClass, superClass) { if (typeof superClass !== "function" && superClass !== null) { throw new TypeError("Super expression must either be null or a function, not " + typeof superClass); } subClass.prototype = Object.create(superClass && superClass.prototype, { constructor: { value: subClass, enumerable: false, writable: true, configurable: true } }); if (superClass) Object.setPrototypeOf ? Object.setPrototypeOf(subClass, superClass) : subClass.__proto__ = superClass; }
-
-var ReactAutoSuggestDropdown = function (_Component) {
-  _inherits(ReactAutoSuggestDropdown, _Component);
-
-  function ReactAutoSuggestDropdown() {
-    _classCallCheck(this, ReactAutoSuggestDropdown);
-
-    var _this = _possibleConstructorReturn(this, (ReactAutoSuggestDropdown.__proto__ || Object.getPrototypeOf(ReactAutoSuggestDropdown)).call(this));
-
-    _this.state = {
-      searchValue: '',
-      showDropdown: false
-    };
-    _this.showDropdown = _this.showDropdown.bind(_this);
-    _this.updateSearchValue = _this.updateSearchValue.bind(_this);
-    return _this;
-  }
-
-  _createClass(ReactAutoSuggestDropdown, [{
-    key: 'componentWillReceiveProps',
-    value: function componentWillReceiveProps(nextProps) {
-      if (nextProps.showDropdown !== undefined) {
-        this.setState({ showDropdown: nextProps.showDropdown });
-      }
-    }
-  }, {
-    key: 'showDropdown',
-    value: function showDropdown() {
-      this.setState({ showDropdown: true });
-    }
-  }, {
-    key: 'updateSearchValue',
-    value: function updateSearchValue(e) {
-      e.preventDefault();
-      this.setState({ searchValue: e.target.value });
-    }
-  }, {
-    key: 'render',
-    value: function render() {
-      return _react2.default.createElement(
-        'div',
-        null,
-        _react2.default.createElement('input', {
-          className: 'standard-input-field',
-          placeholder: 'Start typing or select',
-          onFocus: this.showDropdown,
-          onChange: this.updateSearchValue,
-          value: this.props.chosenValue
-        }),
-        _react2.default.createElement(_AutosuggestDropdown2.default, {
-          itemsToDisplay: this.props.list.length ? this.props.list : null,
-          displayDropdown: this.state.showDropdown,
-          searchFor: this.state.searchValue,
-          chooseDropdownItem: this.props.chooseDropdownItem
-        })
-      );
-    }
-  }]);
-
-  return ReactAutoSuggestDropdown;
-}(_react.Component);
+var ReactAutoSuggestDropdown = function ReactAutoSuggestDropdown(props) {
+  return _react2.default.createElement(
+    'div',
+    null,
+    _react2.default.createElement('input', {
+      className: 'standard-input-field',
+      placeholder: 'Start typing or select',
+      value: props.searchValue,
+      onFocus: props.showDropdown,
+      onChange: props.updateSearchValue
+    }),
+    _react2.default.createElement(_AutosuggestDropdown2.default, {
+      itemsToDisplay: props.list.length ? props.list : null,
+      displayDropdown: props.displayDropdownMenu,
+      searchFor: props.searchValue,
+      chooseDropdownItem: props.chooseDropdownItem,
+      highlightColour: props.highlightColour
+    })
+  );
+};
 
 exports.default = ReactAutoSuggestDropdown;
 

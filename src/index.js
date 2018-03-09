@@ -1,5 +1,5 @@
 import React from 'react'
-import AutosuggestDropdown from '../AutosuggestDropdown'
+import AutosuggestDropdown from './AutosuggestDropdown'
 
 const ReactAutoSuggestDropdown = (props) => {
     return(
